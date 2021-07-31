@@ -13,6 +13,16 @@ type LastData struct {
 	Collecting bool
 }
 
+func defaultLastData() LastData {
+	return LastData{
+		PopPingDropRate: 0,
+		OutageStart: time.Now(),
+		OutageEnd: time.Now(),
+		Cause: DishyOnline,
+		Collecting: false,
+	}
+}
+
 func (l LastData) FriendlyStartTime() string {
 	return l.OutageStart.Format("01/02/2006 15:04:05 MST")
 }

@@ -1,7 +1,8 @@
 package softwareupdate
 
 import (
-	"github.com/innectic/starlinkoutages/log"
+	"time"
+
 	"github.com/innectic/starlinkoutages/rpc"
 	"github.com/innectic/starlinkoutages/module"
 )
@@ -28,6 +29,6 @@ func (m SoftwareUpdateModule) Init() (module.ModuleDefinition, error) {
 	return def, nil
 }
 
-func (m SoftwareUpdateModule) Run() error {
-	return nil
+func (m SoftwareUpdateModule) Run(last interface{}) (interface{}, error) {
+	return nil, nil
 }

@@ -23,15 +23,12 @@ var (
 type UptimeModule struct {
 	c chan module.ModuleMessage
 	r rpc.RPCHandler
-
-	lastData *LastData
 }
 
-func NewUptimeModule(c chan module.ModuleMessage, r rpc.RPCHandler, lastData *LastData) UptimeModule {
+func NewUptimeModule(c chan module.ModuleMessage, r rpc.RPCHandler) UptimeModule {
 	return UptimeModule{
 		c: c,
 		r: r,
-		lastData: lastData,
 	}
 }
 
@@ -41,14 +38,6 @@ func (u UptimeModule) Init() (module.ModuleDefinition, error) {
 		Description: "Monitors uptime and outage duration / causes",
 		Frequency: 1 * time.Second,
 	}
-
-	last := LastData{
-		PopPingDropRate: 0,
-		OutageStart: time.Now(),
-		OutageEnd: time.Now(),
-		Cause: DishyOnline,
-	}
-	(*u.lastData) = last
 
 	return def, nil
 }
@@ -62,10 +51,17 @@ func determineStatus(dishy pb.DishGetStatusResponse) DishyStatus {
 	return DishyOnline
 }
 
-func (u UptimeModule) Run() error {
+func (u UptimeModule) Run(last interface{}) (interface{}, error) {
+	var l LastData
+	if last == nil {
+		l = defaultLastData()
+	} else {
+		l = last.(LastData)
+	}
+
 	dishy, err := u.r.GetStatus()
 	if err != nil {
-		return err
+		return l, err
 	}
 
 	currentState := determineStatus(*dishy)
@@ -80,30 +76,30 @@ func (u UptimeModule) Run() error {
 		// Starlink is currently online. Did we just finish an outage?
 
 		// TODO: Support outage chaining
-		if (*u.lastData).Cause == DishyOnline {
+		if l.Cause == DishyOnline {
 			// Last state was also connected, therefor we are perfectly fine.
-			return nil
+			return l, nil
 		}
 
 		// Collect data to be published
-		(*u.lastData).Ended()
-		duration := (*u.lastData).Duration()
-		friendlyStart := (*u.lastData).FriendlyStartTime()
+		l.Ended()
+		duration := l.Duration()
+		friendlyStart := l.FriendlyStartTime()
 
 		log.Info("OUTAGE COMPLETE! Duration: " + fmt.Sprint(duration))
 
 		// Last state was not connected, so we just finished an outage.
 		u.c <- module.ModuleMessage{
-			Message: GetMessage(friendlyStart, duration, (*u.lastData).Cause, 0, 0, nil),
+			Message: GetMessage(friendlyStart, duration, l.Cause, 0, 0, nil),
 		}
 	} else {
 		// Dishy is not currently online. Start collecting data.
-		if !(*u.lastData).Collecting {
-			(*u.lastData).Started()
-			log.Info(fmt.Sprintf("OUTAGE STARTED! Cause: %s - Start time: %s", currentState, (*u.lastData).FriendlyStartTime()))
+		if !l.Collecting {
+			l.Started()
+			log.Info(fmt.Sprintf("OUTAGE STARTED! Cause: %s - Start time: %s", currentState, l.FriendlyStartTime()))
 		}
 	}
-	(*u.lastData).Cause = currentState
+	l.Cause = currentState
 
-	return nil
+	return l, nil
 }
