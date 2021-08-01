@@ -1,8 +1,10 @@
 package softwareupdate
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/innectic/starlinkoutages/log"
 	"github.com/innectic/starlinkoutages/rpc"
 	"github.com/innectic/starlinkoutages/module"
 )
@@ -30,5 +32,32 @@ func (m SoftwareUpdateModule) Init() (module.ModuleDefinition, error) {
 }
 
 func (m SoftwareUpdateModule) Run(last interface{}) (interface{}, error) {
-	return nil, nil
+	var lastVersion string = ""
+	if last != nil {
+		lastVersion = last.(string)
+	}
+
+	dishy, err := m.r.GetStatus()
+	if err != nil {
+		return lastVersion, err
+	}
+
+	dishyVersion := dishy.DeviceInfo.SoftwareVersion
+
+	// If we don't currently know what version is running, skip this and wait until the next one.
+	if lastVersion == "" {
+		return dishyVersion, nil
+	}
+
+	// Since we do have a version, then compare previous to the current one
+	if lastVersion != dishyVersion {
+		// Version updated.
+		log.Info(fmt.Sprintf("Dishy version updated! Old: %s - New: %s", lastVersion, dishyVersion))
+		m.c <- module.ModuleMessage{
+			Message: GetMessage(time.Now().Format("01/02/2006 15:04:05 MST"), lastVersion, dishyVersion),
+		}
+		return dishyVersion, nil
+	}
+
+	return lastVersion, nil
 }
