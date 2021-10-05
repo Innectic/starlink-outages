@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/innectic/starlinkoutages/log"
-	"github.com/innectic/starlinkoutages/rpc"
-	"github.com/innectic/starlinkoutages/module"
+	"github.com/innectic/starlink-outages/log"
+	"github.com/innectic/starlink-outages/rpc"
+	"github.com/innectic/starlink-outages/module"
 
 	pb "github.com/starlink-community/starlink-grpc-go/pkg/spacex.com/api/device"
 )

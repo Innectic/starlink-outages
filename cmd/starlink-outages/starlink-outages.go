@@ -3,15 +3,15 @@ package main
 import (
 	"fmt"
 	"time"
-	"github.com/innectic/starlinkoutages/rpc"
-	"github.com/innectic/starlinkoutages/log"
-	"github.com/innectic/starlinkoutages/tweet"
-	"github.com/innectic/starlinkoutages/config"
-	"github.com/innectic/starlinkoutages/module"
+	"github.com/innectic/starlink-outages/rpc"
+	"github.com/innectic/starlink-outages/log"
+	"github.com/innectic/starlink-outages/tweet"
+	"github.com/innectic/starlink-outages/config"
+	"github.com/innectic/starlink-outages/module"
 
-	"github.com/innectic/starlinkoutages/module/uptime"
-	"github.com/innectic/starlinkoutages/module/speedtest"
-	"github.com/innectic/starlinkoutages/module/softwareupdate"
+	"github.com/innectic/starlink-outages/module/uptime"
+	"github.com/innectic/starlink-outages/module/speedtest"
+	"github.com/innectic/starlink-outages/module/softwareupdate"
 )
 
 const (
