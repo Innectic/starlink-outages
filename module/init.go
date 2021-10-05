@@ -17,4 +17,5 @@ type ModuleDefinition struct {
 type Module interface {
 	Init() (ModuleDefinition, error)
 	Run(last interface{}) (interface{}, error)
+	Reset()
 }

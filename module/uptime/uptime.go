@@ -11,7 +11,11 @@ import (
 	pb "github.com/starlink-community/starlink-grpc-go/pkg/spacex.com/api/device"
 )
 
-var crap int = 0
+var (
+	hack int = 0
+	totalDowntime int64 = 0
+	amountOfOutages int = 0
+)
 
 type DishyStatus string
 var (
@@ -65,11 +69,11 @@ func (u UptimeModule) Run(last interface{}) (interface{}, error) {
 	}
 
 	currentState := determineStatus(*dishy)
-	if crap == 30 {
+	if hack == 30 {
 		log.Info("Current State: " + currentState)
-		crap = 0
+		hack = 0
 	}
-	crap++
+	hack++
 
 	// Check if starlink is currently online
 	if currentState == DishyOnline {
@@ -88,9 +92,12 @@ func (u UptimeModule) Run(last interface{}) (interface{}, error) {
 
 		log.Info("OUTAGE COMPLETE! Duration: " + fmt.Sprint(duration))
 
+		totalDowntime += duration
+		amountOfOutages = amountOfOutages + 1
+
 		// Last state was not connected, so we just finished an outage.
 		u.c <- module.ModuleMessage{
-			Message: GetMessage(friendlyStart, duration, l.Cause, 0, 0, nil),
+			Message: GetMessage(friendlyStart, duration, l.Cause, amountOfOutages, totalDowntime, nil),
 		}
 	} else {
 		// Dishy is not currently online. Start collecting data.
@@ -102,4 +109,9 @@ func (u UptimeModule) Run(last interface{}) (interface{}, error) {
 	l.Cause = currentState
 
 	return l, nil
+}
+
+func (u UptimeModule) Reset() {
+	totalDowntime = 0
+	amountOfOutages = 0
 }

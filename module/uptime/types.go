@@ -32,9 +32,11 @@ func (l LastData) Duration() int64 {
 }
 
 func (l *LastData) Started() {
+	l.Collecting = true
 	l.OutageStart = time.Now()
 }
 
 func (l *LastData) Ended() {
+	l.Collecting = false
 	l.OutageEnd = time.Now()
 }

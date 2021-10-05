@@ -61,3 +61,6 @@ func (m SoftwareUpdateModule) Run(last interface{}) (interface{}, error) {
 
 	return lastVersion, nil
 }
+
+func (u SoftwareUpdateModule) Reset() {
+}
