@@ -34,7 +34,7 @@ func main() {
 	h := rpc.NewRPCHandler(starlinkAddr)
 
 	log.Info("Setting up Twitter API...")
-	twitter, _ := tweet.NewTweetQueue(cfg.ConsumerKey, cfg.ConsumerSecret, cfg.AccessToken, cfg.AccessSecret)
+	twitter, _ := tweet.NewTweetQueue(cfg.Twitter.ConsumerKey, cfg.Twitter.ConsumerSecret, cfg.Twitter.AccessToken, cfg.Twitter.AccessSecret)
 	go twitter.HandleTweetQueue()
 
 	log.Info("Loading modules...")

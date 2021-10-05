@@ -79,7 +79,7 @@ func (m SpeedtestModule) Run(last interface{}) (interface{}, error) {
 		s.UploadTest(false)
 
 		log.Info(fmt.Sprintf("Latency: %s, download: %f, upload: %f\n", s.Latency, s.DLSpeed, s.ULSpeed))
-		l.Result(int(s.Latency), int(s.ULSpeed), int(s.DLSpeed))
+		l.Result(int(s.Latency.Seconds()), int(s.ULSpeed), int(s.DLSpeed))
 		l.SuccessfulRuns += 1
 
 		m.c <- module.ModuleMessage{
