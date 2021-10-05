@@ -10,6 +10,7 @@ import (
 	"github.com/innectic/starlinkoutages/module"
 
 	"github.com/innectic/starlinkoutages/module/uptime"
+	"github.com/innectic/starlinkoutages/module/speedtest"
 	"github.com/innectic/starlinkoutages/module/softwareupdate"
 )
 
@@ -42,7 +43,8 @@ func main() {
 
 	up := uptime.NewUptimeModule(c, *h)
 	update := softwareupdate.NewSoftwareUpdateModule(c, *h)
-	modules := []module.Module{ up, update }
+	speedtest := speedtest.NewSpeedtestModule(c, *h)
+	modules := []module.Module{ up, update, speedtest }
 
 	for _, m := range modules {
 		go func(mod module.Module) {
