@@ -16,7 +16,7 @@ type TwitterConfig struct {
 	AccessSecret string `json:"access_secret"`
 }
 
-func LoadConfig(file string) (config *TwitterConfig, err error) {
+func LoadConfig(file string) (config *Config, err error) {
 	f, err := os.Open(file)
 	if err != nil {
 		return nil, err
