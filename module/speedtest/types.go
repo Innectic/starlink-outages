@@ -13,36 +13,87 @@ type LastData struct {
 	Speeds []SpeedtestResult
 }
 
-func (l LastData) AverageSpeeds() (int, int) {
-	var totalUpload, totalDownload int = 0
+func defaultLastData() LastData {
+	return LastData{
+		TotalRuns: 0,
+		SuccessfulRuns: 0,
+		Speeds: make([]SpeedtestResult, 0),
+	}
+}
 
-	for speed, _ := range l.Speeds {
-		totalUpload += speed.Upload
-		totalDownload += speed.Download
+func (l LastData) Download() (int, int, int) {
+	var lowest, average, highest, total int = 0, 0, 0, 0
+
+	for _, speed := range l.Speeds {
+		total += speed.Download
+
+		if speed.Download < lowest {
+			lowest = speed.Download
+		}
+
+		if speed.Download > highest {
+			highest = speed.Download
+		}
 	}
 
-	return totalUpload / l.SuccessfulRuns, totalDownload / l.SuccessfulRuns
+	average = total / len(l.Speeds)
+	return average, lowest, highest
+}
+
+func (l LastData) Upload() (int, int, int) {
+	var lowest, average, highest, total int = 0, 0, 0, 0
+
+	for _, speed := range l.Speeds {
+		total += speed.Upload
+
+		if speed.Upload < lowest {
+			lowest = speed.Upload
+		}
+
+		if speed.Upload > highest {
+			highest = speed.Upload
+		}
+	}
+
+	average = total / len(l.Speeds)
+	return average, lowest, highest
 }
 
 func (l LastData) Latency() (int, int, int) {
-	var lowest, average, highest, total int = 0
+	var lowest, average, highest, total int = 0, 0, 0, 0
 
-	for speed, _ := range l.Speeds {
+	for _, speed := range l.Speeds {
 		total += speed.Latency
 
-		if 
+		if speed.Latency < lowest {
+			lowest = speed.Latency
+		}
+
+		if speed.Latency > highest {
+			highest = speed.Latency
+		}
 	}
+
+	average = total / len(l.Speeds)
+	return average, lowest, highest
 }
 
 func (l LastData) Failed() int {
 	return l.TotalRuns - l.SuccessfulRuns
 }
 
-func (l *LastData) Result(upload, download int) {
+func (l *LastData) Result(latency, upload, download int) {
 	result := SpeedtestResult{
 		Upload: upload,
 		Download: download,
+		Latency: latency,
 	}
 
 	l.Speeds = append(l.Speeds, result)
+}
+
+func (l *LastData) Reset() {
+	l.TotalRuns = 0
+	l.SuccessfulRuns = 0
+	l.Speeds = make([]SpeedtestResult, 0)
 }
