@@ -3,9 +3,10 @@ package speedtest
 import (
 	"fmt"
 	"time"
+
 	"github.com/innectic/starlink-outages/log"
-	"github.com/innectic/starlink-outages/rpc"
 	"github.com/innectic/starlink-outages/module"
+	"github.com/innectic/starlink-outages/rpc"
 
 	"github.com/showwin/speedtest-go/speedtest"
 )
@@ -26,9 +27,9 @@ func NewSpeedtestModule(c chan module.ModuleMessage, r rpc.RPCHandler) Speedtest
 
 func (m SpeedtestModule) Init() (module.ModuleDefinition, error) {
 	def := module.ModuleDefinition{
-		Name: "Speedtest",
+		Name:        "Speedtest",
 		Description: "Periodically run speedtests to track speed stability",
-		Frequency: 1 * time.Hour,
+		Frequency:   1 * time.Hour,
 	}
 
 	return def, nil
@@ -42,7 +43,7 @@ func (m SpeedtestModule) Run(last interface{}) (interface{}, error) {
 		l = last.(LastData)
 	}
 
-	if resetLast == true {
+	if resetLast {
 		resetLast = false
 
 		downloadAvg, downloadLow, downloadHigh := l.Download()
@@ -78,12 +79,12 @@ func (m SpeedtestModule) Run(last interface{}) (interface{}, error) {
 		s.DownloadTest(false)
 		s.UploadTest(false)
 
-		log.Info(fmt.Sprintf("Latency: %s, download: %f, upload: %f\n", s.Latency, s.DLSpeed, s.ULSpeed))
+		log.Info(fmt.Sprintf("Latency: %d, download: %f, upload: %f\n", s.Latency.Milliseconds(), s.DLSpeed, s.ULSpeed))
 		l.Result(int(s.Latency.Seconds()), int(s.ULSpeed), int(s.DLSpeed))
 		l.SuccessfulRuns += 1
 
 		m.c <- module.ModuleMessage{
-			Message: EachHour(int(s.Latency), int(s.ULSpeed), int(s.DLSpeed)),
+			Message: EachHour(int(s.Latency.Milliseconds()), int(s.ULSpeed), int(s.DLSpeed)),
 		}
 	}
 
