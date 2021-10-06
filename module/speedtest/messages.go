@@ -1,4 +1,3 @@
-
 package speedtest
 
 import (
@@ -13,7 +12,8 @@ func EachHour(latency, upload, download int) string {
 Test taken at: %s
 Upload Speed: %d
 Download Speed: %d
-	`, time.Now().Format("01/02/2006 15:04:05 MST"), upload, download)
+Latency: %d ms
+	`, time.Now().Format("01/02/2006 15:04:05 MST"), upload, download, latency)
 }
 
 func Daily(downloadAvg, downloadLow, downloadHigh, uploadAvg, uploadLow, uploadHigh, latencyAvg, latencyLow, latencyHigh, totalTests, failedTests int) string {
